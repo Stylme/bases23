@@ -1,12 +1,15 @@
 
 <div>
 <?php
+header('Content-type: text/html; charset=utf-8');
 require_once("conexion.php");
+    mysqli_set_charset($conexion, "utf8");
 $i = 0;
-
+$i++;
 $medico = $_POST['med'];
+echo "<p> $medico - $i</p>";
 $sql = "SELECT * FROM PROGRAMACION,PACIENTE,MEDICO,TIPO_CIRUGIA,SITIO,CIRUGIA where MEDICO.nom_medico='$medico' and PROGRAMACION.cod_medico=MEDICO.cod_medico and PROGRAMACION.cod_sitio=SITIO.cod_sitio and PROGRAMACION.cod_paciente=PACIENTE.cod_paciente and CIRUGIA.cod_cirugia=PROGRAMACION.cod_cirugia and CIRUGIA.cod_t_cirugia=TIPO_CIRUGIA.cod_t_cirugia;";
-
+mysqli_set_charset($conexion, "utf8");
 $result = mysqli_query($conexion, $sql);
 while ($row = mysqli_fetch_array($result)) {
     if ($i == 0) {
@@ -114,6 +117,7 @@ while ($row = mysqli_fetch_array($result)) {
         </div>
         <?php
     } ?>
+
 
     <?php $i += 1;
 }
