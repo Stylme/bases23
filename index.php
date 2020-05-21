@@ -21,6 +21,7 @@
 <body>
 
 Seleccionar Médico: <select id="seleccion" class="form-control" onchange="medico()">
+    <option value="default">Seleccionar médico...</option>
     <?php
     $conexion = mysqli_connect("localhost", "root", "", "josebases1");
     $sql = "SELECT * FROM MEDICO";
