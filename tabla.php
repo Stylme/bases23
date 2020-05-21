@@ -23,7 +23,7 @@ while ($row = mysqli_fetch_array($result)) {
                     </div>
                     <div class="card-body">
 
-                        <p class="card-text"><strong>Médico: </strong> <?php echo $row["nom_medico"] ?></p>
+                        <p class="card-text"><strong>MÃ©dico: </strong> <?php echo $row["nom_medico"] ?></p>
 
                         <p class="card-text"><strong>Paciente: </strong> <?php echo $row["nom_paciente"] ?></p>
 
@@ -31,7 +31,7 @@ while ($row = mysqli_fetch_array($result)) {
 
                         <p class="card-text"><strong>Costo:</strong> <?php echo $row["costo"] ?></p>
 
-                        <button class="btn"><strong>Tipo de cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
+                        <button class="btn"><strong>Tipo de cirugÃ­a:</strong> <?php echo $row["nom_t_cirugia"] ?>
                         </button>
 
 
@@ -41,7 +41,7 @@ while ($row = mysqli_fetch_array($result)) {
             <div class="col-3 ml-2 mt-2">
                 <div class="card">
                     <div class="card-header">
-                        <h2>Programación</h2>
+                        <h2>ProgramaciÃ³n</h2>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title"></h5>
@@ -83,7 +83,7 @@ while ($row = mysqli_fetch_array($result)) {
                     <div class=""></div>
                     <div class="card-body">
 
-                        <p class="card-text"><strong>Médico:</strong> <?php echo $row["nom_medico"] ?></p>
+                        <p class="card-text"><strong>MÃ©dico:</strong> <?php echo $row["nom_medico"] ?></p>
 
                         <p class="card-text"><strong>Paciente:</strong> <?php echo $row["nom_paciente"] ?></p>
 
@@ -91,7 +91,7 @@ while ($row = mysqli_fetch_array($result)) {
 
                         <p class="card-text"><strong>Costo:</strong> <?php echo $row["costo"] ?></p>
 
-                        <button class="btn"><strong>Tipo de cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
+                        <button class="btn"><strong>Tipo de cirugÃ­a:</strong> <?php echo $row["nom_t_cirugia"] ?>
                         </button>
                     </div>
                 </div>
