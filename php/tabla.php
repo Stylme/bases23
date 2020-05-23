@@ -1,17 +1,18 @@
 <div>
     <?php
-    header('Content-type: text/html; charset=utf-8');
-    $conexion = mysqli_connect("localhost", "root", "", "josebases1");
-    mysqli_set_charset($conexion, "utf8");
+    require_once("conexion.php");
     $i = 0;
+
     $medico = $_POST['med'];
-    $sql = "SELECT * FROM PROGRAMACION,PACIENTE,MEDICO,TIPO_CIRUGIA,SITIO,CIRUGIA 
-    WHERE MEDICO.nom_medico='$medico' AND PROGRAMACION.cod_medico=MEDICO.cod_medico 
-    AND PROGRAMACION.cod_sitio=SITIO.cod_sitio 
-    AND PROGRAMACION.cod_paciente=PACIENTE.cod_paciente 
-    AND CIRUGIA.cod_cirugia=PROGRAMACION.cod_cirugia 
-    AND CIRUGIA.cod_t_cirugia=TIPO_CIRUGIA.cod_t_cirugia";
-    mysqli_set_charset($conexion, "utf8");
+    $sql = "SELECT * 
+    FROM PROGRAMACION,PACIENTE,MEDICO,TIPO_CIRUGIA,SITIO,CIRUGIA 
+    where MEDICO.nom_medico='$medico' 
+    and PROGRAMACION.cod_medico=MEDICO.cod_medico 
+    and PROGRAMACION.cod_sitio=SITIO.cod_sitio 
+    and PROGRAMACION.cod_paciente=PACIENTE.cod_paciente 
+    and CIRUGIA.cod_cirugia=PROGRAMACION.cod_cirugia 
+    and CIRUGIA.cod_t_cirugia=TIPO_CIRUGIA.cod_t_cirugia
+    ORDER BY programacion.fecha_cirugia";
     $result = mysqli_query($conexion, $sql);
     while ($row = mysqli_fetch_array($result)) {
         if ($i == 0) {
@@ -24,18 +25,76 @@
                             <h2>Datos</h2>
                         </div>
                         <div class="card-body">
-
                             <p class="card-text"><strong>Médico: </strong> <?php echo $row["nom_medico"] ?></p>
-
                             <p class="card-text"><strong>Paciente: </strong> <?php echo $row["nom_paciente"] ?></p>
-
                             <p class="card-text"><strong>Sitio: </strong> <?php echo $row["nom_sitio"] ?></p>
-
                             <p class="card-text"><strong>Costo:</strong> <?php echo $row["costo"] ?></p>
-
-                            <button class="btn"><strong>Tipo de cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
+                            <button type="button" data-toggle="modal" data-target="#modaltablita" class="btn btn-outline-success"><strong>Tipo de
+                                    cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
                             </button>
+                            <div class="modal" id="modaltablita" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Requerimentos de la cirugía</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <table class="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Materiales</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <?php
+                                                    $nom_t = $row['nom_t_cirugia'];
+                                                    $sqli = "SELECT nom_t_cirugia,nom_material 
+                                                                FROM TIPO_CIRUGIA,CIRUGIA_MATERIALES,MATERIALES 
+                                                                    WHERE nom_t_cirugia='$nom_t' 
+                                                                        and TIPO_CIRUGIA.cod_t_cirugia=CIRUGIA_MATERIALES.cod_t_cirugia 
+                                                                            and CIRUGIA_MATERIALES.cod_materiales=MATERIALES.cod_material";
+                                                    $resulti = mysqli_query($conexion, $sqli);
+                                                    while ($rowmat = mysqli_fetch_array($resulti)) { ?>
+                                                        <tbody>
+                                                            <td><?php echo $rowmat["nom_material"] ?></td>
+                                                        </tbody>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </table>
+                                            </div>
+                                            <div class="col-6">
+                                                <table class="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Medicamentos</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <?php
+                                                    $nom_t = $row['nom_t_cirugia'];
+                                                    $sqli = "SELECT nom_t_cirugia,nom_medicamento
+                                                                FROM TIPO_CIRUGIA,CIRUGIA_MEDICAMENTOS,MEDICAMENTOS
+                                                                    WHERE nom_t_cirugia='$nom_t' 
+                                                                        and TIPO_CIRUGIA.cod_t_cirugia=CIRUGIA_MEDICAMENTOS.cod_t_cirugia 
+                                                                            and CIRUGIA_MEDICAMENTOS.cod_medicamentos=MEDICAMENTOS.cod_medicamento";
+                                                    $resulti = mysqli_query($conexion, $sqli);
+                                                    while ($rowmat = mysqli_fetch_array($resulti)) { ?>
+                                                        <tbody>
+                                                            <td><?php echo $rowmat["nom_medicamento"] ?></td>
+                                                        </tbody>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </table>
+                                            </div>
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,8 +106,11 @@
                         <div class="card-body">
                             <h5 class="card-title"></h5>
                             <div class="card-body">
-                                <h5 class="card-title">Fecha y hora</h5>
-                                <p class="card-text"><?php echo $row["fecha_cirugia"] ?></p>
+                                <h5 class="card-title">Fecha:</h5>
+                                <p class="card-text"><?php echo substr($row["fecha_cirugia"], 0, 10)  ?></p>
+                                <h5 class="card-title">Hora:</h5>
+                                <p class="card-text"><?php echo substr($row["fecha_cirugia"], 11, 18)  ?></p>
+
                             </div>
 
                         </div>
@@ -61,7 +123,6 @@
                         </div>
                         <div class="card-body">
                             <h5 class="card-title"></h5>
-                            <p class="card-text">Consultas</p>
                             <?php
                             $sql1 = "SELECT sum(programacion.costo) 
                             FROM programacion, medico 
@@ -71,57 +132,111 @@
                             $gananciastotales = mysqli_fetch_array($resultadoGanancias);
                             $sql2 = ""
                             ?>
-                            <p class="card-text"><h6>Ganancias totales:</h6><?php echo $gananciastotales[0] ?></p>
+                            <p class="card-text">
+                                <h6>Ganancias totales:</h6><?php echo $gananciastotales[0] ?>
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="col-1"></div>
             </div>
-
         <?php
         } else {
         ?>
             <div class="row">
-
                 <div class="col-1"></div>
                 <div class="col-3 ml-2 mt-2">
                     <div class="card">
                         <div class=""></div>
                         <div class="card-body">
-
                             <p class="card-text"><strong>Médico:</strong> <?php echo $row["nom_medico"] ?></p>
-
                             <p class="card-text"><strong>Paciente:</strong> <?php echo $row["nom_paciente"] ?></p>
-
                             <p class="card-text"><strong>Sitio:</strong> <?php echo $row["nom_sitio"] ?></p>
-
                             <p class="card-text"><strong>Costo:</strong> <?php echo $row["costo"] ?></p>
-
-                            <button class="btn"><strong>Tipo de cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
+                            <button type="button" data-toggle="modal" data-target="#<?php echo $row["nom_t_cirugia"] ?>" aria-pressed="false" class="btn btn-outline-success"><strong>Tipo de
+                                    cirugía:</strong> <?php echo $row["nom_t_cirugia"] ?>
                             </button>
+                            <div class="modal fade" id=<?php echo $row["nom_t_cirugia"] ?> tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Requerimentos de la cirugía</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <table class="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Materiales</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <?php
+                                                    $nom_t = $row['nom_t_cirugia'];
+                                                    $sqli = "SELECT nom_t_cirugia,nom_material 
+                                                                FROM TIPO_CIRUGIA,CIRUGIA_MATERIALES,MATERIALES 
+                                                                    WHERE nom_t_cirugia='$nom_t' 
+                                                                        and TIPO_CIRUGIA.cod_t_cirugia=CIRUGIA_MATERIALES.cod_t_cirugia 
+                                                                            and CIRUGIA_MATERIALES.cod_materiales=MATERIALES.cod_material";
+                                                    $resulti = mysqli_query($conexion, $sqli);
+                                                    while ($rowmat = mysqli_fetch_array($resulti)) { ?>
+                                                        <tbody>
+                                                            <td><?php echo $rowmat["nom_material"] ?></td>
+                                                        </tbody>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </table>
+                                            </div>
+                                            <div class="col-6">
+                                                <table class="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Medicamentos</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <?php
+                                                    $nom_t = $row['nom_t_cirugia'];
+                                                    $sqli = "SELECT nom_t_cirugia,nom_medicamento
+                                                        FROM TIPO_CIRUGIA,CIRUGIA_MEDICAMENTOS,MEDICAMENTOS
+                                                            WHERE nom_t_cirugia='$nom_t' 
+                                                                and TIPO_CIRUGIA.cod_t_cirugia=CIRUGIA_MEDICAMENTOS.cod_t_cirugia 
+                                                                    and CIRUGIA_MEDICAMENTOS.cod_medicamentos=MEDICAMENTOS.cod_medicamento";
+                                                    $resulti = mysqli_query($conexion, $sqli);
+                                                    while ($rowmat = mysqli_fetch_array($resulti)) { ?>
+                                                        <tbody>
+                                                            <td><?php echo $rowmat["nom_medicamento"] ?></td>
+                                                        </tbody>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="col-3 ml-2 mt-2">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title"></h5>
                             <div class="card-body">
-                                <h5 class="card-title">Fecha y hora</h5>
-                                <p class="card-text"><?php echo $row["fecha_cirugia"] ?></p>
+                                <h5 class="card-title">Fecha:</h5>
+                                <p class="card-text"><?php echo substr($row["fecha_cirugia"], 0, 10) ?></p>
+                                <h5 class="card-title">Hora:</h5>
+                                <p class="card-text"><?php echo substr($row["fecha_cirugia"], 11, 18) ?></p>
                             </div>
-
                         </div>
                     </div>
                 </div>
-
-                <div class="col-1">
-                </div>
+                <div class="col-1"></div>
             </div>
-        <?php
-        } ?>
-    <?php $i++;
-    }
-    ?>
+        <?php } ?>
+    <?php $i += 1;
+    } ?>
 </div>
